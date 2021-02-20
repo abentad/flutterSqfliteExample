@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqfliteExample/add_screen.dart';
+import 'package:sqfliteExample/amount_model.dart';
 import 'package:sqfliteExample/data_provider.dart';
 
 void main() {
@@ -9,7 +10,8 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (BuildContext context) => DataProvider()),
+          create: (BuildContext context) => DataProvider(),
+        )
       ],
       child: MyApp(),
     ),
@@ -44,30 +46,24 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context).push(CupertinoPageRoute(
+          Navigator.of(context).pushReplacement(CupertinoPageRoute(
             builder: (context) => AddScreen(),
           ));
         },
       ),
       body: SafeArea(
-        child: FutureBuilder(
-          future: provider.amountList,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(snapshot.data[index].amount.toString()),
-                  subtitle: Text(snapshot.data[index].date.toString()),
-                  trailing: Text(snapshot.data[index].id.toString()),
-                );
-              },
-            );
-          },
-        ),
+        child: provider.amountList == null
+            ? Center(child: CircularProgressIndicator())
+            : ListView.builder(
+                itemCount: provider.amountList.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(provider.amountList[index].amount.toString()),
+                    subtitle: Text(provider.amountList[index].date.toString()),
+                    trailing: Text(provider.amountList[index].id.toString()),
+                  );
+                },
+              ),
       ),
     );
   }
